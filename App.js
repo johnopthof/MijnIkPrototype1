@@ -1,26 +1,23 @@
 import React, {Component} from 'react';
 import {Platform, StyleSheet, Text, View} from 'react-native';
 
+import GetComponent from './components/GetComponent.js';
+import PostComponent from './components/PostComponent.js';
+
 type Props = {};
 export default class App extends Component<Props> {
 
   constructor(props){
     super(props);
     this.state ={ 
-      data: null,
-      loaded: true,
-      error:null,
-      text: '',
       }
   }
-
   baseURL = 'http://b03zm72.locgov.nl:8080';
-
 
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.welcome}>Welcome to React Native!</Text>
+        <GetComponent baseURL={this.baseURL}/>
       </View>
     );
   }
