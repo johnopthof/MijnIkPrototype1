@@ -1,6 +1,9 @@
 import React, {Component} from 'react';
 import {Platform, StyleSheet, Text, View} from 'react-native';
 
+type Props = {};
+export default class App extends Component<Props> {
+
   constructor(props){
     super(props);
     this.state ={ 
@@ -14,9 +17,6 @@ import {Platform, StyleSheet, Text, View} from 'react-native';
   baseURL = 'http://b03zm72.locgov.nl:8080';
 
 
-
-type Props = {};
-export default class App extends Component<Props> {
   render() {
     return (
       <View style={styles.container}>
