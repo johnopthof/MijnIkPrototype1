@@ -1,5 +1,6 @@
 import React from 'react';
 import { Text, View, StyleSheet, Button, TextInput,} from 'react-native';
+import SecureStorage, { ACCESS_CONTROL, ACCESSIBLE, AUTHENTICATION_TYPE } from 'react-native-secure-storage'
 
 class PostComponent extends React.Component {
 
@@ -41,7 +42,13 @@ class PostComponent extends React.Component {
 
   showData = (data) =>{
     this.setState({data, loaded:true, text:''});
+    await SecureStorage.setItem("bsn", String(data.bsn));
     console.log(data); 
+  }
+
+  calldata =() =>{
+    let bsnFromStore = String(SecureStorage.getItem("bsn"));
+    alert(bsnFromStore);
   }
 
   badCall = (err) =>{
@@ -61,6 +68,7 @@ class PostComponent extends React.Component {
           <TextInput placeholder="lastName" onChangeText={(password) => this.setState({password})} value={this.state.password}></TextInput>
           <Text style={{fontSize: 24}}>POST some data!</Text>
           <Button title="Post request" onPress={this.postData}></Button>
+          <Button title="Call Data" onPress={this.calldata}></Button>
           {this.state.error &&(
             <Text style={styles.err}>{this.state.error}</Text>
           )}
