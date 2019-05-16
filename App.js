@@ -17,7 +17,7 @@ export default class App extends Component<Props> {
   render() {
     return (
       <View style={styles.container}>
-        <GetComponent baseURL={this.baseURL}/>
+        <PostComponent baseURL={this.baseURL}/>
       </View>
     );
   }
