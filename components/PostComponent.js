@@ -47,8 +47,8 @@ class PostComponent extends React.Component {
     //alert(dataB); 
   }
 
-  async function calldata(){
-    data = await SecureStorage.getItem('key');
+  calldata =() =>{
+    data = SecureStorage.getItem('key');
     alert(data);
     console.log(data);
   }
