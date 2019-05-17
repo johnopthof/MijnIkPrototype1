@@ -1,29 +1,25 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow
- */
-
 import React, {Component} from 'react';
 import {Platform, StyleSheet, Text, View} from 'react-native';
+import SecureStorage, { ACCESS_CONTROL, ACCESSIBLE, AUTHENTICATION_TYPE } from 'react-native-secure-storage'
 
-const instructions = Platform.select({
-  ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
-  android:
-    'Double tap R on your keyboard to reload,\n' +
-    'Shake or press menu button for dev menu',
-});
+import GetComponent from './components/GetComponent.js';
+import PostComponent from './components/PostComponent.js';
 
 type Props = {};
 export default class App extends Component<Props> {
+
+  constructor(props){
+    super(props);
+    this.state ={ 
+      }
+  }
+  baseURL = 'http://b03zm72.locgov.nl:8080';
+
+
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.welcome}>Welcome to React Native!</Text>
-        <Text style={styles.instructions}>To get started, edit App.js</Text>
-        <Text style={styles.instructions}>{instructions}</Text>
+        <PostComponent baseURL={this.baseURL}/>
       </View>
     );
   }
