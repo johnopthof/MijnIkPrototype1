@@ -42,13 +42,15 @@ class PostComponent extends React.Component {
 
   showData = (data) =>{
     this.setState({data, loaded:true, text:''});
-    await SecureStorage.setItem("bsn", String(data.bsn));
-    console.log(data); 
+    //dataB = JSON.stringify(data);
+    SecureStorage.setItem('key', 'lamara por vida');
+    //alert(dataB); 
   }
 
-  calldata =() =>{
-    let bsnFromStore = String(SecureStorage.getItem("bsn"));
-    alert(bsnFromStore);
+  async function calldata(){
+    data = await SecureStorage.getItem('key');
+    alert(data);
+    console.log(data);
   }
 
   badCall = (err) =>{
