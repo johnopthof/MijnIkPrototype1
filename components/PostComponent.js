@@ -40,17 +40,28 @@ class PostComponent extends React.Component {
     .catch(this.badCall)
   }
 
-  showData = (data) =>{
+  showData = async (data) =>{
     this.setState({data, loaded:true, text:''});
-    //dataB = JSON.stringify(data);
-    SecureStorage.setItem('key', 'lamara por vida');
+    dataB = JSON.stringify(data.bsn);
+    this.storeData(dataB);
     //alert(dataB); 
   }
 
-  calldata =() =>{
-    data = SecureStorage.getItem('key');
-    alert(data);
-    console.log(data);
+  storeData = async (data) => {
+  try {
+    await SecureStorage.setItem('@key', data);
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+  calldata = async() =>{
+    try {
+      value = await SecureStorage.getItem('@key')
+      console.log(value);
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   badCall = (err) =>{
@@ -61,7 +72,7 @@ class PostComponent extends React.Component {
         return(
         <View style={{flex: 1, paddingTop:20}}>
           
-          <Text>{this.props.baseURL + '/digid/login'}</Text>
+        <Text>{this.props.baseURL + '/digid/login'}</Text>
         <Text>---------------------------------------------------</Text>
           {!this.state.loaded && (
             <Text>Loading</Text>
