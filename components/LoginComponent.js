@@ -2,7 +2,7 @@ import React from 'react';
 import { Text, View, StyleSheet, Button, TextInput,} from 'react-native';
 import SecureStorage, { ACCESS_CONTROL, ACCESSIBLE, AUTHENTICATION_TYPE } from 'react-native-secure-storage'
 
-class PostComponent extends React.Component {
+class LoginComponent extends React.Component {
 
   constructor(props){
     super(props);
@@ -34,22 +34,30 @@ class PostComponent extends React.Component {
       })
     });
 
-    fetch(req)
-    .then(response=>response.json())  //Eerst vertalen naar je taal
-    .then(this.showData)
-    .catch(this.badCall)
+    this.fetchMethod(req);
+  }
+
+  fetchMethod = async(req) =>{
+    try {
+    await fetch(req)
+      .then(response=>response.json())  //Eerst vertalen naar je taal
+      .then(this.showData)
+      .catch(this.badCall)
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   showData = async (data) =>{
     this.setState({data, loaded:true, text:''});
-    dataB = JSON.stringify(data.bsn);
-    this.storeData(dataB);
+    bsn = JSON.stringify(data.bsn);
+    this.storeBsn(bsn);
     //alert(dataB); 
   }
 
-  storeData = async (data) => {
+  storeBsn = async (data) => {
   try {
-    await SecureStorage.setItem('@key', data);
+    await SecureStorage.setItem('@bsn', data);
   } catch (e) {
     console.log(e);
   }
@@ -57,7 +65,7 @@ class PostComponent extends React.Component {
 
   calldata = async() =>{
     try {
-      value = await SecureStorage.getItem('@key')
+      value = await SecureStorage.getItem('@bsn')
       console.log(value);
     } catch (e) {
       console.log(e);
@@ -72,16 +80,14 @@ class PostComponent extends React.Component {
         return(
         <View style={{flex: 1, paddingTop:20}}>
           
-        <Text>{this.props.baseURL + '/digid/login'}</Text>
-        <Text>---------------------------------------------------</Text>
+        {/*        <Text>{this.props.baseURL + '/digid/login'}</Text> 
+        <Text>---------------------------------------------------</Text>*/}
           {!this.state.loaded && (
             <Text>Loading</Text>
           )}
-          <TextInput placeholder="firstName" onChangeText={(username) => this.setState({username})} value={this.state.username}></TextInput>
-          <TextInput placeholder="lastName" onChangeText={(password) => this.setState({password})} value={this.state.password}></TextInput>
-          <Text style={{fontSize: 24}}>POST some data!</Text>
-          <Button title="Post request" onPress={this.postData}></Button>
-          <Button title="Call Data" onPress={this.calldata}></Button>
+          <TextInput placeholder="Naam" onChangeText={(username) => this.setState({username})} value={this.state.username}></TextInput>
+          <TextInput placeholder="Wachtwoord" onChangeText={(password) => this.setState({password})} value={this.state.password}></TextInput>
+          <Button title="Login" onPress={this.postData}></Button>
           {this.state.error &&(
             <Text style={styles.err}>{this.state.error}</Text>
           )}
@@ -94,7 +100,7 @@ class PostComponent extends React.Component {
         )
     }
 }
-export default PostComponent;
+export default LoginComponent;
 
 const styles = StyleSheet.create({
   container: {

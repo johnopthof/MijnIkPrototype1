@@ -1,8 +1,7 @@
 import React, {Component} from 'react';
 import {Platform, StyleSheet, Text, View} from 'react-native';
 
-import GetComponent from './components/GetComponent.js';
-import PostComponent from './components/PostComponent.js';
+import LoginComponent from './components/LoginComponent.js';
 
 type Props = {};
 export default class App extends Component<Props> {
@@ -12,13 +11,13 @@ export default class App extends Component<Props> {
     this.state ={ 
       }
   }
-  //baseURL = 'http://b03zm72.locgov.nl:8080';
-  baseURL = 'http://192.168.2.27:8080';
+  baseURL = 'http://b03zm72.locgov.nl:8080';
+  //baseURL = 'http://192.168.2.27:8080';
 
   render() {
     return (
       <View style={styles.container}>
-        <PostComponent baseURL={this.baseURL}/>
+        <LoginComponent baseURL={this.baseURL}/>
       </View>
     );
   }
