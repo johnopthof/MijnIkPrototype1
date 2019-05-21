@@ -1,6 +1,8 @@
 import React from 'react';
-import { Text, View, StyleSheet, Button, TextInput,} from 'react-native';
+import {TouchableOpacity, Text, View, StyleSheet, Button, TextInput,} from 'react-native';
+
 import SecureStorage, { ACCESS_CONTROL, ACCESSIBLE, AUTHENTICATION_TYPE } from 'react-native-secure-storage'
+import {connect} from 'react-redux';
 
 class LoginComponent extends React.Component {
 
@@ -96,11 +98,30 @@ class LoginComponent extends React.Component {
               <Text>{this.state.data.bsn}</Text>
             )
           }
+
+          <Text>---------------------------------------------------</Text>
+          <TouchableOpacity onPress={()=> this.props.increaseCounter()}><Text style={{fontSize:20}}>Increase</Text></TouchableOpacity>
+          <Text>{this.props.counter}</Text>
+          <TouchableOpacity onPress={()=> this.props.decreaseCounter()}><Text style={{fontSize:20}}>Decrease</Text></TouchableOpacity>
         </View>
         )
     }
 }
-export default LoginComponent;
+
+function mapStateToProps(state){
+    return{
+        counter:state.counter
+    }
+}
+
+ function mapDispatchToProps(dispatch){
+   return{
+     increaseCounter : () => dispatch({type: 'INCREASE_COUNTER'}),
+     decreaseCounter : () => dispatch({type: 'DECREASE_COUNTER'}),
+   }
+ }
+
+export default connect(mapStateToProps, mapDispatchToProps)(LoginComponent);
 
 const styles = StyleSheet.create({
   container: {
