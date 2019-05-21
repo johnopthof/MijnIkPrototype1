@@ -54,12 +54,21 @@ class LoginComponent extends React.Component {
     this.setState({data, loaded:true, text:''});
     bsn = JSON.stringify(data.bsn);
     this.storeBsn(bsn);
-    //alert(dataB); 
   }
 
   storeBsn = async (data) => {
   try {
     await SecureStorage.setItem('@bsn', data);
+    this.props.logUserIn();
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+  logUserOut = async (data) => {
+  try {
+    await SecureStorage.setItem('@bsn', '');
+    this.props.ReduxlogUserOut();
   } catch (e) {
     console.log(e);
   }
@@ -100,9 +109,9 @@ class LoginComponent extends React.Component {
           }
 
           <Text>---------------------------------------------------</Text>
-          <TouchableOpacity onPress={()=> this.props.increaseCounter()}><Text style={{fontSize:20}}>Increase</Text></TouchableOpacity>
-          <Text>{this.props.counter}</Text>
-          <TouchableOpacity onPress={()=> this.props.decreaseCounter()}><Text style={{fontSize:20}}>Decrease</Text></TouchableOpacity>
+          <Text>{this.props.login.toString()}</Text>
+          <TouchableOpacity onPress={()=> this.logUserOut()}><Text style={{fontSize:20}}>LOGOUT</Text></TouchableOpacity>
+          {/*<TouchableOpacity onPress={()=> this.props.logUserIn()}><Text style={{fontSize:20}}>ReduxLogin</Text></TouchableOpacity>*/}
         </View>
         )
     }
@@ -110,14 +119,14 @@ class LoginComponent extends React.Component {
 
 function mapStateToProps(state){
     return{
-        counter:state.counter
+        login: state.login
     }
 }
 
  function mapDispatchToProps(dispatch){
    return{
-     increaseCounter : () => dispatch({type: 'INCREASE_COUNTER'}),
-     decreaseCounter : () => dispatch({type: 'DECREASE_COUNTER'}),
+     logUserIn              : () => dispatch({type: 'LOGIN'}),
+     ReduxlogUserOut        : () => dispatch({type: 'LOGOUT'}),
    }
  }
 

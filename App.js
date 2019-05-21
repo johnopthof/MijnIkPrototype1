@@ -4,21 +4,22 @@ import {Platform, StyleSheet, Text, View} from 'react-native';
 import { createStackNavigator, createAppContainer } from "react-navigation";
 import { createStore } from 'redux';
 import {Provider} from 'react-redux';
+import PinView from 'react-native-pin-view'
 
 import LoginComponent from './components/LoginComponent.js';
 
 type Props = {};
 
 const initialState = {
-  counter: 0
+  login: false
 }
 
  const reducer = (state=initialState, action) =>{
    switch(action.type) {
-     case "INCREASE_COUNTER": 
-        return { counter: state.counter + 1}
-     case "DECREASE_COUNTER":
-        return { counter: state.counter - 1}
+     case "LOGIN":
+        return { login: state.login = true}
+     case "LOGOUT":
+        return { login: state.login = false}
    }
    return state;
  }
