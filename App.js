@@ -1,27 +1,29 @@
 import React, {Component} from 'react';
-import {Platform, StatusBar, NativeModules, LayoutAnimation, StyleSheet, Text, View} from 'react-native';
+import {Platform, StatusBar, NativeModules, LayoutAnimation, StyleSheet, Text, View, Button} from 'react-native';
 
 import { createStackNavigator, createAppContainer } from "react-navigation";
 import { createStore } from 'redux';
 import {Provider} from 'react-redux';
 import EStyleSheet from 'react-native-extended-stylesheet';
-//import LinearGradient from 'react-native-linear-gradient';
+import SecureStorage, { ACCESS_CONTROL, ACCESSIBLE, AUTHENTICATION_TYPE } from 'react-native-secure-storage'
 
-import LoginComponent from './components/LoginComponent.js';
-import PinScreen        from './views/PinScreen.js';
+import AuthorizationScreen from './screens/AuthorizationScreen.js';
+import PinScreen        from './screens/PinScreen.js';
 
 type Props = {};
 
 const initialState = {
-  login: false
+  Authorized: false,
 }
 
  const reducer = (state=initialState, action) =>{
    switch(action.type) {
-     case "LOGIN":
-        return { login: state.login = true}
+     case "LOGGEDIN":
+        return { Authorized: state.Authorized = true}
      case "LOGOUT":
-        return { login: state.login = false}
+        return { Authorized: state.Authorized = false}
+     case "val":
+        return { bsn: state.bsn = action.value}
    }
    return state;
  }
@@ -29,36 +31,35 @@ const initialState = {
  const store = createStore(reducer);
 
 
-const { UIManager } = NativeModules;
-StatusBar.setBarStyle('light-content', true);
-UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
- LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+const AppNavigator = createStackNavigator(
+  {
+    Home: PinScreen,
+    DigiD: AuthorizationScreen,
+  }
+);
+
+let Navigation = createAppContainer(AppNavigator);
 
 export default class App extends Component<Props> {
 
   constructor(props){
     super(props);
-    this.state ={ 
-      }
+    this.state ={}
   }
-  baseURL = 'http://b03zm72.locgov.nl:8080';
+//  baseURL = 'http://b03zm72.locgov.nl:8080';
   //baseURL = 'http://192.168.2.27:8080';
 
-onPress() {
-    // Uncomment to animate the next state change.
-    LayoutAnimation.easeInEaseOut();
-  }
 
   render() {
     return (
       <Provider store={store}>
-        <View style={styles.container}>
-          <PinScreen/>
-        </View>
+        <Navigation/>
       </Provider>
     );
   }
 }
+
+
 
 
 const Colors = { 

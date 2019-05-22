@@ -4,8 +4,40 @@ import EStyleSheet from 'react-native-extended-stylesheet';
 import PinView from 'react-native-pin-view';
 import LinearGradient from 'react-native-linear-gradient';
 
+import SecureStorage, { ACCESS_CONTROL, ACCESSIBLE, AUTHENTICATION_TYPE } from 'react-native-secure-storage';
+import {connect} from 'react-redux';
+
 class PinScreen extends React.Component {
 	
+  constructor(props){
+    super(props);
+    this.state ={ 
+      text: '',
+      BSN: '',
+      }
+  }
+
+  checkAuthorization = async() => {
+    try {
+      bsn = await SecureStorage.getItem('@bsn');
+			console.log("First show result bsn:" + bsn);
+			if(bsn != ''){
+				console.log("!bsn");
+				this.props.isAuthorized();
+			}else{
+				this.props.navigation.replace("DigiD");
+			}
+
+			console.log("Updated bsn vanuit checkauthorization naar redux store");
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  componentWillMount(){
+    this.checkAuthorization();
+  }
+
   render() {
     return (
 			<LinearGradient style={[styles.pinview]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} colors={[Colors.headerRight, Colors.headerLeft]}>
@@ -25,12 +57,26 @@ class PinScreen extends React.Component {
           pinLength={4}
         />
       
+			<Button title="Go to Details" onPress={() => this.props.navigation.navigate('DigiD')}/>
 			</LinearGradient>
     );
   }
 }
 
-export default PinScreen;
+function mapStateToProps(state){
+    return{
+        login: state.login,
+        bsn: state.bsn
+    }
+}
+
+ function mapDispatchToProps(dispatch){
+   return{
+     isAuthorized              : () => dispatch({type: 'LOGGEDIN'}),
+   }
+ }
+
+export default connect(mapStateToProps, mapDispatchToProps)(PinScreen);
 
 const Colors = { 
   main: '#AF1E82',

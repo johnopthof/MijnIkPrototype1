@@ -1,10 +1,10 @@
 import React from 'react';
 import {TouchableOpacity, Text, View, StyleSheet, Button, TextInput,} from 'react-native';
 
-import SecureStorage, { ACCESS_CONTROL, ACCESSIBLE, AUTHENTICATION_TYPE } from 'react-native-secure-storage'
+import SecureStorage, { ACCESS_CONTROL, ACCESSIBLE, AUTHENTICATION_TYPE } from 'react-native-secure-storage';
 import {connect} from 'react-redux';
 
-class LoginComponent extends React.Component {
+class AuthorizationScreen extends React.Component {
 
   constructor(props){
     super(props);
@@ -19,10 +19,11 @@ class LoginComponent extends React.Component {
       }
   }
 
+  /** This method constructs the request to the API */
   postData = (ev)=>{
     this.setState({loaded:false, error: null});
 
-    let url = this.props.baseURL + '/digid/login';
+    let url = 'http://b03zm72.locgov.nl:8080/digid/login';
 
     let h = new Headers();
     h.append('Accept', 'application/json');
@@ -39,6 +40,7 @@ class LoginComponent extends React.Component {
     this.fetchMethod(req);
   }
 
+  //This async method calls the API
   fetchMethod = async(req) =>{
     try {
     await fetch(req)
@@ -50,16 +52,18 @@ class LoginComponent extends React.Component {
     }
   }
 
+  //If succesfol API call, this method wil show result and save BSN
   showData = async (data) =>{
     this.setState({data, loaded:true, text:''});
     bsn = JSON.stringify(data.bsn);
-    this.storeBsn(bsn);
+    this.authorizeUser(bsn);
   }
 
-  storeBsn = async (data) => {
+  //Secure Store BSN
+  authorizeUser = async (data) => {
   try {
     await SecureStorage.setItem('@bsn', data);
-    this.props.logUserIn();
+    this.props.isAuthorized();
   } catch (e) {
     console.log(e);
   }
@@ -74,6 +78,7 @@ class LoginComponent extends React.Component {
   }
 }
 
+/** Kan weg
   calldata = async() =>{
     try {
       value = await SecureStorage.getItem('@bsn')
@@ -81,7 +86,7 @@ class LoginComponent extends React.Component {
     } catch (e) {
       console.log(e);
     }
-  }
+  } */
 
   badCall = (err) =>{
     this.setState({loaded:true, error: err.message, text:''}); 
@@ -109,8 +114,9 @@ class LoginComponent extends React.Component {
           }
 
           <Text>---------------------------------------------------</Text>
-          <Text>{this.props.login.toString()}</Text>
+          <Text>{this.props.Authorized.toString()}</Text>
           <TouchableOpacity onPress={()=> this.logUserOut()}><Text style={{fontSize:20}}>LOGOUT</Text></TouchableOpacity>
+          <Button title="Go to Home" onPress={() => this.props.navigation.navigate('Home')}/>
           {/*<TouchableOpacity onPress={()=> this.props.logUserIn()}><Text style={{fontSize:20}}>ReduxLogin</Text></TouchableOpacity>*/}
         </View>
         )
@@ -119,18 +125,20 @@ class LoginComponent extends React.Component {
 
 function mapStateToProps(state){
     return{
-        login: state.login
+        Authorized: state.Authorized,
+        bsn: state.bsn
     }
 }
 
  function mapDispatchToProps(dispatch){
    return{
-     logUserIn              : () => dispatch({type: 'LOGIN'}),
+     isAuthorized           : () => dispatch({type: 'LOGGEDIN'}),
      ReduxlogUserOut        : () => dispatch({type: 'LOGOUT'}),
+     updateBsn              : (bsn) => dispatch({type: 'val', value: bsn}),
    }
  }
 
-export default connect(mapStateToProps, mapDispatchToProps)(LoginComponent);
+export default connect(mapStateToProps, mapDispatchToProps)(AuthorizationScreen);
 
 const styles = StyleSheet.create({
   container: {
