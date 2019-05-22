@@ -40,6 +40,10 @@ class AuthorizationScreen extends React.Component {
     this.fetchMethod(req);
   }
 
+  checkReturn = (data) =>{
+
+  }
+
   //This async method calls the API
   fetchMethod = async(req) =>{
     try {
@@ -54,6 +58,11 @@ class AuthorizationScreen extends React.Component {
 
   //If succesfol API call, this method wil show result and save BSN
   succesCall = async (data) =>{
+    //checkReturn(data);
+    if(!data.bsn){
+      this.setState({loaded:true, text: 'Gebruikersnaam of wachtwoord is niet juist'})
+      return;
+    }
     this.setState({data, loaded:true, text:''});
     bsn = JSON.stringify(data.bsn);
     this.authorizeUser(bsn);
@@ -103,6 +112,7 @@ class AuthorizationScreen extends React.Component {
           {!this.state.loaded && (
             <Text>Loading</Text>
           )}
+          <Text>{this.state.text}</Text>
           <TextInput placeholder="Naam" onChangeText={(username) => this.setState({username})} value={this.state.username}></TextInput>
           <TextInput placeholder="Wachtwoord" onChangeText={(password) => this.setState({password})} value={this.state.password}></TextInput>
           <Button title="Login" onPress={this.postData}></Button>
