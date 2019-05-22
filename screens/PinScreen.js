@@ -14,29 +14,78 @@ class PinScreen extends React.Component {
     this.state ={ 
       text: '',
       BSN: '',
+			newUser: false,
+			inputPin: '',
+			userPin: '',
       }
   }
 
+	/**
+	This is the first function runned when startin the app
+	 */
   checkAuthorization = async() => {
     try {
+			//Lets check if the app has a bsn & pincode, then it will be authorized for a person,
       bsn = await SecureStorage.getItem('@bsn');
-			console.log("First show result bsn:" + bsn);
-			if(bsn != ''){
-				console.log("!bsn");
+			userPin = await SecureStorage.getItem("@userPin");
+			if(bsn != '' && userPin != ''){
 				this.props.isAuthorized();
+				this.setState({userPin: userPin});
+			}else if(this.props.navigation.getParam("action") == "createPin"){
+				this.setState({newUser: true})
 			}else{
 				this.props.navigation.replace("DigiD");
 			}
-
-			console.log("Updated bsn vanuit checkauthorization naar redux store");
     } catch (e) {
       console.log(e);
     }
   }
 
+	ownSetState = async(state) => {
+		this.setState(state);
+	}
+
   componentWillMount(){
-    this.checkAuthorization();
+		this.checkAuthorization();
   }
+	
+	/**This method wil run after the user has typed in a pincode */
+	onCompletePin(val){
+		//Check if the user is making a new pincode
+		if(this.state.newUser){
+			//Save this code as a new code
+			this.saveUserPin(val);
+			//Change state to user has a code
+			this.setState({newUser: false});
+		}else{
+			//Attempt to log the user in
+			this.logUserIn(val);	
+		}
+	}
+
+	/** This method saves the users pin  */
+	saveUserPin = async (value)=>{
+		await SecureStorage.setItem("@userPin", value);
+	}
+
+/** This method checks if the correct pincode has been inserted, then sets redux var to loggedin and changes view */
+ comparePins = async (stored) => {
+	 console.log("STORED: " + stored);
+	 console.log("inputPin: " + this.state.inputPin);
+
+	 if(stored == this.state.inputPin){
+			console.log("Deze zwiempie is ingelogd a niffauw");
+			this.props.login();
+			this.props.navigation.replace("Home");
+	 }
+ }
+
+ logUserIn = async (val) =>{
+	 this.setState({inputPin: val})
+	 result = await SecureStorage.getItem("@userPin")
+			.then(this.comparePins)
+			.catch(console.log);
+ }
 
   render() {
     return (
@@ -45,19 +94,14 @@ class PinScreen extends React.Component {
         <PinView
           style={styles.pin} buttonTextColor="#443456" inputActiveBgColor="#443456"
           onComplete={(val, clear)=> {
-              if (val === '0000') {
-                alert(' bedankt');
-								clear();
-              } else {
-                alert('Foutje bedankt');
-                clear();
-              }
+							this.onCompletePin(val)
+              clear();
             }
           }
           pinLength={4}
         />
       
-			<Button title="Go to Details" onPress={() => this.props.navigation.navigate('DigiD')}/>
+			<Button title="Van burger verwisselen" onPress={() => this.props.navigation.navigate('DigiD')}/>
 			</LinearGradient>
     );
   }
@@ -65,14 +109,15 @@ class PinScreen extends React.Component {
 
 function mapStateToProps(state){
     return{
-        login: state.login,
-        bsn: state.bsn
+        Authorized: state.Authorized,
+				Logedin:	state.Logedin,
     }
 }
 
  function mapDispatchToProps(dispatch){
    return{
-     isAuthorized              : () => dispatch({type: 'LOGGEDIN'}),
+     login              		: () => dispatch({type: 'LOGIN'}),
+     isAuthorized           : () => dispatch({type: 'AUTHORIZED'}),
    }
  }
 

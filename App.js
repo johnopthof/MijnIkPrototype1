@@ -8,33 +8,41 @@ import EStyleSheet from 'react-native-extended-stylesheet';
 import SecureStorage, { ACCESS_CONTROL, ACCESSIBLE, AUTHENTICATION_TYPE } from 'react-native-secure-storage'
 
 import AuthorizationScreen from './screens/AuthorizationScreen.js';
-import PinScreen        from './screens/PinScreen.js';
+import PinScreen        	from './screens/PinScreen.js';
+import HomeScreen        	from './screens/HomeScreen.js';
 
 type Props = {};
 
 const initialState = {
   Authorized: false,
+	Loggedin: false
 }
 
  const reducer = (state=initialState, action) =>{
    switch(action.type) {
-     case "LOGGEDIN":
-        return { Authorized: state.Authorized = true}
-     case "LOGOUT":
+     case "AUTHORIZED":
+        return { 
+					//let obj = json.parse state
+					//change obj
+					//return obj
+					Authorized: state.Authorized = true}
+     case "UNAUTHORIZE":
         return { Authorized: state.Authorized = false}
-     case "val":
-        return { bsn: state.bsn = action.value}
+     case "LOGIN":
+        return { Loggedin: state.Loggedin = true}
+		case "LOGOUT":
+				return { Loggedin: state.Loggedin = true}
    }
    return state;
  }
- 
- const store = createStore(reducer);
 
+const store = createStore(reducer);
 
 const AppNavigator = createStackNavigator(
   {
-    Home: PinScreen,
+    Pin: PinScreen,
     DigiD: AuthorizationScreen,
+		Home:		HomeScreen,
   }
 );
 
@@ -46,9 +54,6 @@ export default class App extends Component<Props> {
     super(props);
     this.state ={}
   }
-//  baseURL = 'http://b03zm72.locgov.nl:8080';
-  //baseURL = 'http://192.168.2.27:8080';
-
 
   render() {
     return (
@@ -58,9 +63,6 @@ export default class App extends Component<Props> {
     );
   }
 }
-
-
-
 
 const Colors = { 
   main: '#AF1E82',

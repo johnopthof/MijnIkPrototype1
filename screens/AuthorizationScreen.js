@@ -45,7 +45,7 @@ class AuthorizationScreen extends React.Component {
     try {
     await fetch(req)
       .then(response=>response.json())  //Eerst vertalen naar je taal
-      .then(this.showData)
+      .then(this.succesCall)
       .catch(this.badCall)
     } catch (e) {
       console.log(e);
@@ -53,10 +53,11 @@ class AuthorizationScreen extends React.Component {
   }
 
   //If succesfol API call, this method wil show result and save BSN
-  showData = async (data) =>{
+  succesCall = async (data) =>{
     this.setState({data, loaded:true, text:''});
     bsn = JSON.stringify(data.bsn);
     this.authorizeUser(bsn);
+    this.props.navigation.replace("Pin", {action: "createPin"});
   }
 
   //Secure Store BSN
@@ -72,6 +73,7 @@ class AuthorizationScreen extends React.Component {
   logUserOut = async (data) => {
   try {
     await SecureStorage.setItem('@bsn', '');
+    await SecureStorage.setItem('@userPin', '');
     this.props.ReduxlogUserOut();
   } catch (e) {
     console.log(e);
@@ -115,8 +117,8 @@ class AuthorizationScreen extends React.Component {
 
           <Text>---------------------------------------------------</Text>
           <Text>{this.props.Authorized.toString()}</Text>
-          <TouchableOpacity onPress={()=> this.logUserOut()}><Text style={{fontSize:20}}>LOGOUT</Text></TouchableOpacity>
-          <Button title="Go to Home" onPress={() => this.props.navigation.navigate('Home')}/>
+          <TouchableOpacity onPress={()=> this.logUserOut()}><Text style={{fontSize:20}}>Machtiging intrekken</Text></TouchableOpacity>
+          <Button title="Pincode invoeren" onPress={() => this.props.navigation.navigate('Pin')}/>
           {/*<TouchableOpacity onPress={()=> this.props.logUserIn()}><Text style={{fontSize:20}}>ReduxLogin</Text></TouchableOpacity>*/}
         </View>
         )
@@ -132,9 +134,8 @@ function mapStateToProps(state){
 
  function mapDispatchToProps(dispatch){
    return{
-     isAuthorized           : () => dispatch({type: 'LOGGEDIN'}),
-     ReduxlogUserOut        : () => dispatch({type: 'LOGOUT'}),
-     updateBsn              : (bsn) => dispatch({type: 'val', value: bsn}),
+     isAuthorized           : () => dispatch({type: 'AUTHORIZED'}),
+     ReduxlogUserOut        : () => dispatch({type: 'UNAUTHORIZE'}),
    }
  }
 
