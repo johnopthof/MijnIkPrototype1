@@ -6,6 +6,7 @@ import LinearGradient from 'react-native-linear-gradient';
 
 import SecureStorage, { ACCESS_CONTROL, ACCESSIBLE, AUTHENTICATION_TYPE } from 'react-native-secure-storage';
 import {connect} from 'react-redux';
+import Biometrics from 'react-native-biometrics';
 
 class PinScreen extends React.Component {
 	
@@ -39,7 +40,22 @@ class PinScreen extends React.Component {
     } catch (e) {
       console.log(e);
     }
+		if(!this.props.Authorized){alert("IS ALERT VANUIT CHECKAUTORIZATION IN PINSCREEN.JS JE MOET WETEN")}
   }
+
+/**Check if this works! */
+	checkBiometrics = () => {
+		Biometrics.isSensorAvailable()
+		.then((biometryType) => {
+			if (biometryType === Biometrics.TouchID) {
+				alert('TouchID is supported')
+			} else if (biometryType === Biometrics.FaceID) {
+				alert('FaceID is supported')
+			} else {
+				alert('Biometrics not supported')
+			}
+  })
+	}
 
 	ownSetState = async(state) => {
 		this.setState(state);
@@ -47,6 +63,7 @@ class PinScreen extends React.Component {
 
   componentWillMount(){
 		this.checkAuthorization();
+		this.checkBiometrics();
   }
 	
 	/**This method wil run after the user has typed in a pincode */

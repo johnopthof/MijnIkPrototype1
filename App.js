@@ -5,7 +5,9 @@ import { createStackNavigator, createAppContainer } from "react-navigation";
 import { createStore } from 'redux';
 import {Provider} from 'react-redux';
 import EStyleSheet from 'react-native-extended-stylesheet';
-import SecureStorage, { ACCESS_CONTROL, ACCESSIBLE, AUTHENTICATION_TYPE } from 'react-native-secure-storage'
+import SecureStorage, { ACCESS_CONTROL, ACCESSIBLE, AUTHENTICATION_TYPE } from 'react-native-secure-storage';
+import Biometrics from 'react-native-biometrics';
+
 
 import AuthorizationScreen from './screens/AuthorizationScreen.js';
 import PinScreen        	from './screens/PinScreen.js';

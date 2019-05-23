@@ -3,6 +3,7 @@ package com.client;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.rnbiometrics.ReactNativeBiometricsPackage;
 import com.BV.LinearGradient.LinearGradientPackage;
 import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
 import li.yunqi.rnsecurestorage.RNSecureStoragePackage;
@@ -26,6 +27,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new ReactNativeBiometricsPackage(),
             new LinearGradientPackage(),
             new RNGestureHandlerPackage(),
             new RNSecureStoragePackage()
