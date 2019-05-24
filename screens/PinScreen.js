@@ -8,6 +8,8 @@ import SecureStorage, { ACCESS_CONTROL, ACCESSIBLE, AUTHENTICATION_TYPE } from '
 import {connect} from 'react-redux';
 import Biometrics from 'react-native-biometrics';
 
+import Loader from '../components/Loader.js';
+
 class PinScreen extends React.Component {
 	
   constructor(props){
@@ -19,6 +21,7 @@ class PinScreen extends React.Component {
 				inputPin: '',
 				userPin: '',
 				biometricsType: null,
+				loaded: false,
       }
   }
 
@@ -45,9 +48,13 @@ class PinScreen extends React.Component {
 					.catch(() => {
 						this.saveUserBiometricsPref(this.state.biometricsType, false);
 					})
+					
+					this.setState({loaded: true});
 			} else if(bsn != '' && userPin != ''){
 				this.props.isAuthorized();
 				this.setState({userPin: userPin});
+				
+				this.setState({loaded: true});
 			} else{
 				this.props.navigation.replace("DigiD");
 			}
@@ -87,6 +94,10 @@ class PinScreen extends React.Component {
 		this.setAvailableBiometricsToState();
 		this.checkAuthorization();
   }
+
+	componentDidMount(){
+		//this.setState({loaded: true});
+	}
 	
 	/**This method wil run after the user has typed in a pincode */
 	onCompletePin(val){
@@ -132,23 +143,26 @@ class PinScreen extends React.Component {
  }
 
   render() {
-		if(!this.state.authorized){return()}
-    return (
-			<LinearGradient style={[styles.pinview]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} colors={[Colors.headerRight, Colors.headerLeft]}>
-        <Text style={styles.text}>Login met je pincode</Text>
-        <PinView
-          style={styles.pin} buttonTextColor="#443456" inputActiveBgColor="#443456"
-          onComplete={(val, clear)=> {
-							this.onCompletePin(val)
-              clear();
-            }
-          }
-          pinLength={4}
-        />
-      
-			<Button title="Van burger verwisselen" onPress={() => this.props.navigation.navigate('DigiD')}/>
-			</LinearGradient>
-    );
+		console.log("vage laoded bool: "+ this.state.loaded);
+		if(this.state.loaded == false){return <Loader title="Laden"/>}
+		else{
+			return (
+				<LinearGradient style={[styles.pinview]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} colors={[Colors.headerRight, Colors.headerLeft]}>
+					<Text style={styles.text}>Login met je pincode</Text>
+					<PinView
+						style={styles.pin} buttonTextColor="#443456" inputActiveBgColor="#443456"
+						onComplete={(val, clear)=> {
+								this.onCompletePin(val)
+								clear();
+							}
+						}
+						pinLength={4}
+					/>
+				
+				<Button title="Van burger verwisselen" onPress={() => this.props.navigation.navigate('DigiD')}/>
+				</LinearGradient>
+			);
+		}
   }
 }
 

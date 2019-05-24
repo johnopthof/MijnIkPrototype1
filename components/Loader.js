@@ -4,14 +4,14 @@ import {
 	Text,
 	ActivityIndicator,
 } from 'react-native';
-import {Colors} from '../constants/Colors';
+import {Colors} from '../constants/Colors.js';
 import EStyleSheet from 'react-native-extended-stylesheet';
-import { LinearGradient } from 'expo';
+import LinearGradient from 'react-native-linear-gradient';
 export default class Loader extends React.Component {
     render() {
         return (
 			<View style={styles.container}>
-				<LinearGradient style={[styles.headerGradient]} start={[0, 1]} end={[1, 0]} colors={[Colors.headerRight, Colors.headerLeft]}>
+				<LinearGradient style={[styles.headerGradient]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} colors={[Colors.headerRight, Colors.headerLeft]}>
 					<View style={styles.center}>
 					<ActivityIndicator size="large" color={Colors.white} />
 						<Text style={styles.text}>{this.props.title}</Text>
