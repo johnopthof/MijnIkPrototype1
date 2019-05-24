@@ -24,6 +24,8 @@ class AuthorizationScreen extends React.Component {
     this.setState({loaded:false, error: null});
 
     let url = 'http://b03zm72.locgov.nl:8080/digid/login';
+    //let url = 'http://192.168.43.17:8080/digid/login';
+
 
     let h = new Headers();
     h.append('Accept', 'application/json');
@@ -38,10 +40,6 @@ class AuthorizationScreen extends React.Component {
     });
 
     this.fetchMethod(req);
-  }
-
-  checkReturn = (data) =>{
-
   }
 
   //This async method calls the API
@@ -80,24 +78,21 @@ class AuthorizationScreen extends React.Component {
 }
 
   logUserOut = async (data) => {
-  try {
-    await SecureStorage.setItem('@bsn', '');
-    await SecureStorage.setItem('@userPin', '');
-    this.props.ReduxlogUserOut();
-  } catch (e) {
-    console.log(e);
-  }
-}
-
-/** Kan weg
-  calldata = async() =>{
     try {
-      value = await SecureStorage.getItem('@bsn')
-      console.log(value);
+      await SecureStorage.setItem('@bsn', '');
+      await SecureStorage.setItem('@userPin', '');
+      this.props.ReduxlogUserOut();
+      saveUserBiometricsPref(null, false);
     } catch (e) {
       console.log(e);
     }
-  } */
+  }
+
+
+	saveUserBiometricsPref = async (value, boolBiometric=true) => {
+		await SecureStorage.setItem("@biometricsType", value);
+		await SecureStorage.setItem("@boolBiometric", boolBiometric.toString());
+	}
 
   badCall = (err) =>{
     this.setState({loaded:true, error: err.message, text:''}); 
@@ -114,7 +109,7 @@ class AuthorizationScreen extends React.Component {
           )}
           <Text>{this.state.text}</Text>
           <TextInput placeholder="Naam" onChangeText={(username) => this.setState({username})} value={this.state.username}></TextInput>
-          <TextInput placeholder="Wachtwoord" onChangeText={(password) => this.setState({password})} value={this.state.password}></TextInput>
+          <TextInput placeholder="Wachtwoord" secureTextEntry={true} onChangeText={(password) => this.setState({password})} value={this.state.password}></TextInput>
           <Button title="Login" onPress={this.postData}></Button>
           {this.state.error &&(
             <Text style={styles.err}>{this.state.error}</Text>

@@ -34,7 +34,7 @@ class HomeScreen extends React.Component {
         return(
         <View style={{flex: 1, paddingTop:20}}>
           
-        <Text>EWAAAAANIFFFAUUWW</Text>
+        <Text>Welkom op het homescreen</Text>
         </View>
         )
     }

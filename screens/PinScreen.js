@@ -13,11 +13,12 @@ class PinScreen extends React.Component {
   constructor(props){
     super(props);
     this.state ={ 
-      text: '',
-      BSN: '',
-			newUser: false,
-			inputPin: '',
-			userPin: '',
+				text: '',
+				BSN: '',
+				newUser: false,
+				inputPin: '',
+				userPin: '',
+				biometricsType: null,
       }
   }
 
@@ -26,35 +27,56 @@ class PinScreen extends React.Component {
 	 */
   checkAuthorization = async() => {
     try {
+			let bsn;
+			let userPin;
 			//Lets check if the app has a bsn & pincode, then it will be authorized for a person,
       bsn = await SecureStorage.getItem('@bsn');
 			userPin = await SecureStorage.getItem("@userPin");
-			if(bsn != '' && userPin != ''){
+			/**Volgende 2 regels kunnen oplossing zijn, niet meer tijd aan spenderen dan 30 minuten!!+ */
+			boolBiometric = await SecureStorage.getItem("@boolBiometric");
+			if(this.props.navigation.getParam("action") == "createPin"){
+				this.setState({newUser: true})
+				//Do finger prompt to set finger prompt for this machtiging
+				if(this.state.biometricsType == null){exit;}
+				Biometrics.simplePrompt('Biometrics instellen?')
+					.then(() => {
+						this.saveUserBiometricsPref(this.state.biometricsType);
+					})
+					.catch(() => {
+						this.saveUserBiometricsPref(this.state.biometricsType, false);
+					})
+			} else if(bsn != '' && userPin != ''){
 				this.props.isAuthorized();
 				this.setState({userPin: userPin});
-			}else if(this.props.navigation.getParam("action") == "createPin"){
-				this.setState({newUser: true})
-			}else{
+			} else{
 				this.props.navigation.replace("DigiD");
 			}
+
+			if(boolBiometric == 'true' && this.props.navigation.getParam("action") != "createPin") {
+				Biometrics.simplePrompt('Inloggen')
+					.then(() => {
+						console.log("Deze zwiempie is ingelogd a niffauw");
+						this.props.login();
+						this.props.navigation.replace("Home");
+					})
+					.catch(() => {
+						this.saveUserBiometricsPref(this.state.biometricsType, false);
+						console.log('fingerprint failed or prompt was cancelled')
+					})
+			}
+
     } catch (e) {
       console.log(e);
     }
-		if(!this.props.Authorized){alert("IS ALERT VANUIT CHECKAUTORIZATION IN PINSCREEN.JS JE MOET WETEN")}
+		//if(!this.props.Authorized){alert("IS ALERT VANUIT CHECKAUTORIZATION IN PINSCREEN.JS JE MOET WETEN")}
   }
 
-/**Check if this works! */
-	checkBiometrics = () => {
+	setAvailableBiometricsToState = () => {
+		//Set biometrics available
 		Biometrics.isSensorAvailable()
 		.then((biometryType) => {
-			if (biometryType === Biometrics.TouchID) {
-				alert('TouchID is supported')
-			} else if (biometryType === Biometrics.FaceID) {
-				alert('FaceID is supported')
-			} else {
-				alert('Biometrics not supported')
-			}
-  })
+			this.setState({biometricsType: biometryType})
+  	})
 	}
 
 	ownSetState = async(state) => {
@@ -62,8 +84,8 @@ class PinScreen extends React.Component {
 	}
 
   componentWillMount(){
+		this.setAvailableBiometricsToState();
 		this.checkAuthorization();
-		this.checkBiometrics();
   }
 	
 	/**This method wil run after the user has typed in a pincode */
@@ -83,6 +105,11 @@ class PinScreen extends React.Component {
 	/** This method saves the users pin  */
 	saveUserPin = async (value)=>{
 		await SecureStorage.setItem("@userPin", value);
+	}
+
+	saveUserBiometricsPref = async (value, boolBiometric=true) => {
+		await SecureStorage.setItem("@biometricsType", value);
+		await SecureStorage.setItem("@boolBiometric", boolBiometric.toString());
 	}
 
 /** This method checks if the correct pincode has been inserted, then sets redux var to loggedin and changes view */
@@ -105,6 +132,7 @@ class PinScreen extends React.Component {
  }
 
   render() {
+		if(!this.state.authorized){return()}
     return (
 			<LinearGradient style={[styles.pinview]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} colors={[Colors.headerRight, Colors.headerLeft]}>
         <Text style={styles.text}>Login met je pincode</Text>
